@@ -38,10 +38,10 @@ case $1 in
 		echo "Invalid argument: $1"
 		echo "Available arguments are:"
 		echo "========================"
-		echo "setup             : Initialize aehe-speak"
+		echo "setup             : Initialize speak"
 		echo "add <key> <text>  : Creates new speech file with provided key and text"
 	       	echo "say <key>         : Speaks the text for provided key added in 'add' command"
 		echo "------------------------"
-		echo "example           : aehe-speak.sh add GREET \"Hello! How are you?\""
+		echo "example           : speak.sh add GREET \"Hello! How are you?\""
 		;;
 esac
