@@ -32,7 +32,7 @@ case $1 in
 		echo New key created: $2
 		;;
 	say)
-		omxplayer -o alsa $data_dir/$2.mp3
+		omxplayer --no-osd -o alsa $data_dir/$2.mp3
 		;;
 	*)
 		echo "Invalid argument: $1"
