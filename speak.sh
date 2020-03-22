@@ -10,7 +10,9 @@ case $1 in
 		touch $config_dir gcp_credentials.json
 		echo Installing jq...
 		sudo apt-get install jq
-		echo Set google application credentials, for more details: https://cloud.google.com/text-to-speech/docs/quickstart-protocol
+		echo Installing mpg123...
+		sudo apt-get install mpg123
+		echo "Set google application credentials, for more details: https://cloud.google.com/text-to-speech/docs/quickstart-protocol"
 		read -p "Press enter to continue"
 		nano $config_dir/gcp_credentials.json
 		echo Install GCP Cloud SDK, if not installed see: https://cloud.google.com/sdk/docs#deb
@@ -32,7 +34,8 @@ case $1 in
 		echo New key created: $2
 		;;
 	say)
-		omxplayer --no-osd -o alsa $data_dir/$2.mp3
+		# sudo omxplayer --no-osd -o alsa $data_dir/$2.mp3
+		mpg123 $data_dir/$2.mp3
 		;;
 	*)
 		echo "Invalid argument: $1"

@@ -5,7 +5,7 @@ Scripts created for Raspberry Pi Zero W assistant using Google Assistant and Goo
 Sample program to turn on/off LEDs mounted on GPIO. 
 
 ### speak
-Uses google cloud text to speech api to create mp3 speech files. Requires `omxplayer` and `gcloud` cli (https://cloud.google.com/sdk/docs#deb)to be installed.
+Uses google cloud text to speech api to create mp3 speech files. Requires `omxplayer` (or mpg123) and `gcloud` cli (https://cloud.google.com/sdk/docs#deb)to be installed.
 Refer https://cloud.google.com/text-to-speech/docs/quickstart-protocol for tutorial
 Usage: `aehe-speak <setup|add|speak> [key] [text]`
 ```sh
