@@ -1,11 +1,23 @@
 # Raspberry Pi Zero W Scripts
 Scripts created for Raspberry Pi Zero W assistant using Google Assistant and Google Cloud SDK
 
+### Initial setup
+Set scripts folder (this) in path environment variable `/home/pi/.profile`:
+```sh
+# set PI_HOME
+export PI_HOME="/home/pi"
+
+# set PATH to custom scripts folder if it exists
+if [ -d "$HOME/scripts" ] ; then
+    PATH="$HOME/scripts:$PATH"
+fi
+```
+
 ### hello_led_gpio.py
 Sample program to turn on/off LEDs mounted on GPIO. 
 
 ### speak
-Uses google cloud text to speech api to create mp3 speech files. Requires `omxplayer` (or mpg123) and `gcloud` cli (https://cloud.google.com/sdk/docs#deb)to be installed.
+Uses google cloud text to speech api to create mp3 speech files. Requires `omxplayer` (or `mpg123`) and `gcloud` cli (https://cloud.google.com/sdk/docs#deb)to be installed.
 Refer https://cloud.google.com/text-to-speech/docs/quickstart-protocol for tutorial
 Usage: `aehe-speak <setup|add|speak> [key] [text]`
 ```sh
@@ -18,7 +30,7 @@ bash speak.sh say SAY_HELLO
 ```
 
 ### internet_indicator.sh
-This script will set GPIO(4) output 1 if internet connection is not available else will set it 0
+This script pings `8.8.8.8` to check internet and sets GPIO(4) output 1 if internet connection is not available else will set it 0
 Usage: `sudo bash internet_indecator.sh <start|check>`
 ##### Setup crontab to schedule the script
 * Edit corntab config: `conrntab -e`

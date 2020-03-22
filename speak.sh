@@ -1,5 +1,5 @@
-data_dir=~/.data/gcp-text-to-speech
-config_dir=~/.config/gcp-text-to-speech
+data_dir=$PI_HOME/.data/gcp-text-to-speech
+config_dir=$PI_HOME/.config/gcp-text-to-speech
 case $1 in
 	setup)
 		echo Making aehe-speak ready...
@@ -35,7 +35,7 @@ case $1 in
 		;;
 	say)
 		# sudo omxplayer --no-osd -o alsa $data_dir/$2.mp3
-		mpg123 $data_dir/$2.mp3
+		mpg123 -q $data_dir/$2.mp3
 		;;
 	*)
 		echo "Invalid argument: $1"
