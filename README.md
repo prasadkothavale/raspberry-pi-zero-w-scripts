@@ -1,6 +1,7 @@
 # Raspberry Pi Zero W Scripts
-Scripts created for Raspberry Pi Zero W assistant using Google Assistant and Google Cloud SDK
+Scripts created for Raspberry Pi Zero W assistant using Google Assistant and Google Cloud SDK. Root folder `./` contains scrips written for features listed below, `./drivers` folder contains drivers written for external hardware connected through GPIO pins.
 
+## Scripts
 ### Initial setup
 Set scripts folder (this) in path environment variable `/home/pi/.profile`:
 ```sh
@@ -41,4 +42,14 @@ Due to limitations of `crontab` above line schedules check per minute, to check 
 * * * * * sudo bash /home/pi/scripts/internet_indicator.sh check >/dev/null 2>&1
 * * * * * sleep 20; sudo bash /home/pi/scripts/internet_indicator.sh check >/dev/null 2>&1
 * * * * * sleep 40; sudo bash /home/pi/scripts/internet_indicator.sh check >/dev/null 2>&1
+```
+
+## Drivers
+### bme280.py
+_Assuming the script is executed from root_`./`_foler_
+```python
+from drivers.bme280 import readBME280All
+# returns tuple (temperature, pressure, humidity)
+readBME280All()
+
 ```
