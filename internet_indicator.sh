@@ -1,5 +1,13 @@
 #!bin/bash
-#This script will set GPIO(4) output 1 if internet connection is not available else will set it 0
+# --------------------------------------
+#             _          
+#   __ _  ___| |__   ___ 
+#  / _` |/ _ \ '_ \ / _ \
+# | (_| |  __/ | | |  __/
+#  \__,_|\___|_| |_|\___|
+#                       
+# This script will set GPIO(4) output 1 if internet connection is not available else will set it 0
+# -------------------------------------
 source /home/pi/.profile
 case $1 in
     start)

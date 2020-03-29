@@ -46,7 +46,7 @@ Due to limitations of `crontab` above line schedules check per minute, to check 
 
 ## Drivers
 ### bme280.py
-_Assuming the script is executed from root_`./`_foler_
+_Assuming the python script is executed from root_`./`_foler_
 ```python
 from drivers.bme280 import readBME280All
 # returns tuple (temperature, pressure, humidity)
