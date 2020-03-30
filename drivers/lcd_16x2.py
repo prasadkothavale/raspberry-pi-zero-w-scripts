@@ -84,6 +84,8 @@ LCD_LINE_2 = 0xC0 # LCD RAM address for the 2nd line
 E_PULSE = 0.0005
 E_DELAY = 0.0005
 
+SCROLL_SPEED = 4 # Characters/Second (Never set it 0)
+
 """ TODO: Main program to run driver script from command line """
 def main():
   
@@ -93,12 +95,49 @@ def main():
 
   # turn on backlight, send test text, turn off backlight
   GPIO.output(LCD_BK, True)
-  lcd_string("- Raspberry Pi -",LCD_LINE_1)
-  lcd_string(" 16x2  LCD Test ",LCD_LINE_2)
+  lcd_string('- Raspberry Pi -',LCD_LINE_1)
+  lcd_string(' 16x2  LCD Test ',LCD_LINE_2)
   time.sleep(5)
   GPIO.output(LCD_BK, False)
   
   GPIO.cleanup()
+  
+""" Writes single line specified, scrolls if more than LCD_WIDTH characters """
+def write_line(text, is_first):
+    lcd_line = LCD_LINE_1 if is_first else LCD_LINE_2
+    text = text.ljust(LCD_WIDTH, ' ')
+    text_length = len(text)
+    text_pointer = 0
+    
+    while text_pointer <= text_length - LCD_WIDTH:
+        lcd_string(text[text_pointer : text_pointer + LCD_WIDTH], lcd_line)
+        text_pointer += 1
+        time.sleep(1/SCROLL_SPEED)
+
+""" Writes provided text on line 1, overflow text is carried over line 2.
+Scrolls if text length is more that 2 x LCD_WIDTH """
+def write_multiple_lines(text):
+    text = text.ljust(2 * LCD_WIDTH)
+    text_length = len(text)
+    text_pointer = 0
+    
+    while text_pointer <= text_length - 2*LCD_WIDTH:
+        lcd_string(text[text_pointer : text_pointer + LCD_WIDTH], LCD_LINE_1)
+        lcd_string(text[text_pointer + LCD_WIDTH : text_pointer + 2*LCD_WIDTH], LCD_LINE_2)
+        text_pointer += 1
+        time.sleep(1/SCROLL_SPEED)
+
+""" Clears screen """
+def clear():
+    lcd_byte(0x01,LCD_CMD) # 000001 Clear display
+
+""" Set backlight on/off """
+def set_backlight(status):
+    GPIO.output(LCD_BK, status)
+    
+""" GPIO cleanup """
+def gpio_cleanup():
+    GPIO.cleanup()
 
 """ Initialise GPIO output """
 def gpio_init():
@@ -174,7 +213,7 @@ def lcd_toggle_enable():
 
 def lcd_string(message,line):
   # Send string to display
-  message = message.ljust(LCD_WIDTH," ")
+  message = message.ljust(LCD_WIDTH,' ')
 
   lcd_byte(line, LCD_CMD)
 
