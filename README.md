@@ -9,8 +9,15 @@ Set scripts folder (this) in path environment variable `/home/pi/.profile`:
 export PI_HOME="/home/pi"
 
 # set PATH to custom scripts folder if it exists
-if [ -d "$HOME/scripts" ] ; then
-    PATH="$HOME/scripts:$PATH"
+if [ -d "$PI_HOME/scripts" ] ; then
+    export SCRIPTS="$PI_HOME/scripts"
+    PATH="$PI_HOME/scripts:$PATH"
+fi
+
+# set PATH to custom drivers folder if it exists
+if [ -d "$PI_HOME/scripts/drivers" ] ; then
+    export DRIVERS="$SCRIPTS/drivers"
+    PATH="$PI_HOME/scripts/drivers:$PATH"
 fi
 ```
 
