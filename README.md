@@ -53,3 +53,28 @@ from drivers.bme280 import readBME280All
 readBME280All()
 
 ```
+
+### pwm_op.py
+Creats pulse width modulaiton of `120Hz` with duty cycle of `0.6` on `GPIO 27`
+Create service to start execution on startup
+```sh
+sudo nano /lib/systemd/system/pwm_op.service 
+```
+Add below contents
+```
+[Unit] 
+Description=Create 120Hz 0.6 duty cycle pulse width modulation output 
+After=multi-user.target 
+ 
+[Service] 
+Type=idle 
+ExecStart=/usr/bin/python3 /home/pi/scripts/drivers/pwm_op.py 
+ 
+[Install] 
+WantedBy=multi-user.target 
+```
+Configure systemd
+```sh
+sudo systemctl daemon-reload 
+sudo systemctl enable pwm_op.service 
+```

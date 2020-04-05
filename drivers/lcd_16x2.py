@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # --------------------------------------
 #             _          
 #   __ _  ___| |__   ___ 
@@ -6,8 +6,8 @@
 # | (_| |  __/ | | |  __/
 #  \__,_|\___|_| |_|\___|
 #                       
-# The original script is modified to convert example into driver. Constant values are modified to 
-# run RG1602A LCD panel on 3V power. Backlight is connected to GPIO pin to control backlight on/off.
+# The original script is modified to convert example into driver
+# Backlight is connected to GPIO pin to control backlight on/off.
 #--------------------------------------
 #    ___  ___  _ ____
 #   / _ \/ _ \(_) __/__  __ __
@@ -42,7 +42,7 @@
 
 # The wiring for the LCD is as follows:
 # 1 : GND
-# 2 : 3V                     - Some displays run on 5V
+# 2 : 5V                     - Some displays run on 5V
 # 3 : Contrast (0-5V)*       - 0V (Ground) 
 # 4 : RS (Register Select)   - GPIO 7
 # 5 : R/W (Read Write)       - Ground
@@ -61,6 +61,7 @@
 #import
 import RPi.GPIO as GPIO
 import time
+import sys
 
 # Define GPIO to LCD mapping
 LCD_RS = 7
@@ -88,43 +89,52 @@ SCROLL_SPEED = 4 # Characters/Second (Never set it 0)
 
 """ TODO: Main program to run driver script from command line """
 def main():
-  
-  # initialise
-  gpio_init()
-  lcd_init()
-
-  # turn on backlight, send test text, turn off backlight
-  GPIO.output(LCD_BK, True)
-  lcd_string('- Raspberry Pi -',LCD_LINE_1)
-  lcd_string(' 16x2  LCD Test ',LCD_LINE_2)
-  time.sleep(5)
-  GPIO.output(LCD_BK, False)
-  
-  GPIO.cleanup()
+  args = sys.argv
+  if '-b0' == args[1]:
+    set_backlight(False)
+  elif '-b1' == args[1]:
+    set_backlight(True)
+  elif '-c' == args[1]:
+    clear()
+  elif '-i' == args[1]:
+    lcd_init()
+  elif '-l1' == args[1] and not (None == args[2]):
+    write_line(args[2], True)
+  elif '-l2' == args[1] and not (None == args[2]):
+    write_line(args[2], False)
+  elif '-m' == args[1] and not (None == args[2]):
+    write_multiple_lines(args[2])
+  else:
+    print_wrong_args_error()
   
 """ Writes single line specified, scrolls if more than LCD_WIDTH characters """
-def write_line(text, is_first):
+def write_line(text, is_first, initial_delay = 1.5):
     lcd_line = LCD_LINE_1 if is_first else LCD_LINE_2
     text = text.ljust(LCD_WIDTH, ' ')
     text_length = len(text)
     text_pointer = 0
     
-    while text_pointer <= text_length - LCD_WIDTH:
-        lcd_string(text[text_pointer : text_pointer + LCD_WIDTH], lcd_line)
+    lcd_string(text[text_pointer : text_pointer + LCD_WIDTH], lcd_line)
+    time.sleep(initial_delay)
+    while text_pointer < text_length - LCD_WIDTH:
         text_pointer += 1
+        lcd_string(text[text_pointer : text_pointer + LCD_WIDTH], lcd_line)
         time.sleep(1/SCROLL_SPEED)
 
 """ Writes provided text on line 1, overflow text is carried over line 2.
 Scrolls if text length is more that 2 x LCD_WIDTH """
-def write_multiple_lines(text):
+def write_multiple_lines(text, initial_delay = 2):
     text = text.ljust(2 * LCD_WIDTH)
     text_length = len(text)
     text_pointer = 0
     
-    while text_pointer <= text_length - 2*LCD_WIDTH:
+    lcd_string(text[text_pointer : text_pointer + LCD_WIDTH], LCD_LINE_1)
+    lcd_string(text[text_pointer + LCD_WIDTH : text_pointer + 2*LCD_WIDTH], LCD_LINE_2)
+    time.sleep(initial_delay)
+    while text_pointer < text_length - 2*LCD_WIDTH:
+        text_pointer += 1
         lcd_string(text[text_pointer : text_pointer + LCD_WIDTH], LCD_LINE_1)
         lcd_string(text[text_pointer + LCD_WIDTH : text_pointer + 2*LCD_WIDTH], LCD_LINE_2)
-        text_pointer += 1
         time.sleep(1/SCROLL_SPEED)
 
 """ Clears screen """
@@ -219,14 +229,26 @@ def lcd_string(message,line):
 
   for i in range(LCD_WIDTH):
     lcd_byte(ord(message[i]),LCD_CHR)
+    
+def print_wrong_args_error():
+  print('''
+  Invalid arguments passed, usage: python3 lcd_16x2.py arg1 [arg2]
+  valid arguments are:
+  ====================
+  -b0   : Turns backlight off
+  -b1   : Turns backlight on
+  -c    : Clears the screen
+  -i    : Sets GPIO outputs and initializes the display
+  -l1   : Writes provided string in arg2 on line 1
+  -l2   : Writes provided string in arg2 on line 2
+  -m    : Writes provided string in arg2 on both the lines
+  -----------------------------------------------------------------
+  Example:
+  python3 lcd_16x2.py -i
+  python3 lcd_16x2.py -c
+  python3 lcd_16x2.py -l1 "This is line 1"
+  ''');
 
 if __name__ == '__main__':
-
-  try:
-    main()
-  except KeyboardInterrupt:
-    pass
-  finally:
-    #lcd_byte(0x01, LCD_CMD)
-    #lcd_string("Goodbye!",LCD_LINE_1)
-    GPIO.cleanup()
+  gpio_init()
+  main()
