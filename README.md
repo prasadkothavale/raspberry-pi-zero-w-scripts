@@ -51,9 +51,45 @@ Due to limitations of `crontab` above line schedules check per minute, to check 
 * * * * * sleep 40; sudo bash /home/pi/scripts/internet_indicator.sh check >/dev/null 2>&1
 ```
 
+### display_stats.py
+Prints hardware stats like temperature, pressure, humidity, cpu, memory, disk, time, network on screen. Usage `python3 display_stats.py argument`
+Valid arguments are:
+```
+-d      : Displays date and time, arg2 decides time interval to refresh seconds
+-n      : Displays network stats
+-t      : Displays temperature from sensor and weather api
+-p      : Displays pressure from sensor and calculates sea level pressure
+-h      : Displays humidity from sensor and weather api
+-c      : Displays cpu usage and cpu temperature
+-m      : Displays memory and disk usage
+-l      : Displays ambient light, sunset / sunrise time
+-sn     : Scans the network using nmap
+-sw     : Calls weather api for current location
+```
+Example: 
+```
+python3 display_stats.py -d 7
+python3 display_stats.py -n
+```
+##### Setup crontab to schedule the information to be displayed
+* Edit corntab config: `conrntab -e`
+```
+* * * * * sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -n >/dev/null 2>&1
+* * * * * sleep 7.5; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -t >/dev/null 2>&1
+* * * * * sleep 15; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -p >/dev/null 2>&1
+* * * * * sleep 22.5; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -h >/dev/null 2>&1
+* * * * * sleep 30; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -c >/dev/null 2>&1
+* * * * * sleep 37.5; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -m >/dev/null 2>&1
+* * * * * sleep 45; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -l >/dev/null 2>&1
+* * * * * sleep 52.5; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -d 7 >/dev/null 2>&1
+* * * * * sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -sn >/dev/null 2>&1
+* * * * * sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -sw >/dev/null 2>&1
+* * * * * sudo /usr/bin/python3 /home/pi/scripts/drivers/lcd_16x2.py -i >/dev/null 2>&1
+```
+
 ## Drivers
 ### bme280.py
-_Assuming the python script is executed from root_`./`_foler_
+_Assuming the python script is executed from root_`./`_folder_
 ```python
 from drivers.bme280 import readBME280All
 # returns tuple (temperature, pressure, humidity)
@@ -62,7 +98,7 @@ readBME280All()
 ```
 
 ### pwm_op.py
-Creats pulse width modulaiton of `120Hz` with duty cycle of `0.6` on `GPIO 27`
+Creates pulse width modulation of `120Hz` with duty cycle of `0.6` on `GPIO 27`
 Create service to start execution on startup
 ```sh
 sudo nano /lib/systemd/system/pwm_op.service 
