@@ -87,7 +87,7 @@ E_DELAY = 0.0005
 
 SCROLL_SPEED = 4 # Characters/Second (Never set it 0)
 
-""" TODO: Main program to run driver script from command line """
+""" Main program to run driver script from command line """
 def main():
   args = sys.argv
   if '-b0' == args[1]:
@@ -96,6 +96,8 @@ def main():
     set_backlight(True)
   elif '-c' == args[1]:
     clear()
+  elif '-ch' == args[1] and not (None == args[2] and None == args[3]) and ',' in args[3]:
+    write_character(args[2][0], list(map(int, args[3].split(','))))
   elif '-i' == args[1]:
     lcd_init()
   elif '-l1' == args[1] and not (None == args[2]):
@@ -137,6 +139,36 @@ def write_multiple_lines(text, initial_delay = 2):
         lcd_string(text[text_pointer + LCD_WIDTH : text_pointer + 2*LCD_WIDTH], LCD_LINE_2)
         time.sleep(1/SCROLL_SPEED)
 
+""" Writes provided character to a specific screen location [x,y] """
+def write_character(character, location):
+    if (character == None or character == ''):
+        character = ' '
+    character_byte = ord(character[0])
+    memory_addr = (LCD_LINE_1 if location[1] == 0 else LCD_LINE_2) + location[0]
+    lcd_byte(memory_addr, LCD_CMD)
+    lcd_byte(ord(character[0]), LCD_CHR)
+    
+""" Only writes the difference between old_text and new_text, 
+    supported modes are:
+    0: Both lines
+    1: Line 1 only
+    2: Line 2 only """
+def write_diff(old_text, new_text, mode):
+    if 0 == mode:
+        old_text = old_text.ljust(2 * LCD_WIDTH)[-2 * LCD_WIDTH : ]
+        new_text = new_text.ljust(2 * LCD_WIDTH)[-2 * LCD_WIDTH : ]
+    else:
+        old_text = old_text.ljust(LCD_WIDTH)[-1 * LCD_WIDTH : ]
+        new_text = new_text.ljust(LCD_WIDTH)[-1 * LCD_WIDTH : ]
+
+    index = 0
+    while index < len(old_text):
+        if not old_text[index] == new_text[index]:
+            x = index % LCD_WIDTH
+            y = int(index/LCD_WIDTH) if mode == 0 else mode - 1
+            write_character(new_text[index], [x, y])
+        index += 1
+
 """ Clears screen """
 def clear():
     lcd_byte(0x01,LCD_CMD) # 000001 Clear display
@@ -151,25 +183,25 @@ def gpio_cleanup():
 
 """ Initialise GPIO output """
 def gpio_init():
-  GPIO.setwarnings(False)
-  GPIO.setmode(GPIO.BCM)       # Use BCM GPIO numbers
-  GPIO.setup(LCD_E, GPIO.OUT)  # E
-  GPIO.setup(LCD_RS, GPIO.OUT) # RS
-  GPIO.setup(LCD_D4, GPIO.OUT) # DB4
-  GPIO.setup(LCD_D5, GPIO.OUT) # DB5
-  GPIO.setup(LCD_D6, GPIO.OUT) # DB6
-  GPIO.setup(LCD_D7, GPIO.OUT) # DB7
-  GPIO.setup(LCD_BK, GPIO.OUT) # BK
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)       # Use BCM GPIO numbers
+    GPIO.setup(LCD_E, GPIO.OUT)  # E
+    GPIO.setup(LCD_RS, GPIO.OUT) # RS
+    GPIO.setup(LCD_D4, GPIO.OUT) # DB4
+    GPIO.setup(LCD_D5, GPIO.OUT) # DB5
+    GPIO.setup(LCD_D6, GPIO.OUT) # DB6
+    GPIO.setup(LCD_D7, GPIO.OUT) # DB7
+    GPIO.setup(LCD_BK, GPIO.OUT) # BK
 
 """ Initialise display """
 def lcd_init():
-  lcd_byte(0x33,LCD_CMD) # 110011 Initialise
-  lcd_byte(0x32,LCD_CMD) # 110010 Initialise
-  lcd_byte(0x06,LCD_CMD) # 000110 Cursor move direction
-  lcd_byte(0x0C,LCD_CMD) # 001100 Display On,Cursor Off, Blink Off
-  lcd_byte(0x28,LCD_CMD) # 101000 Data length, number of lines, font size
-  lcd_byte(0x01,LCD_CMD) # 000001 Clear display
-  time.sleep(E_DELAY)
+    lcd_byte(0x33,LCD_CMD) # 110011 Initialise
+    lcd_byte(0x32,LCD_CMD) # 110010 Initialise
+    lcd_byte(0x06,LCD_CMD) # 000110 Cursor move direction
+    lcd_byte(0x0C,LCD_CMD) # 001100 Display On,Cursor Off, Blink Off
+    lcd_byte(0x28,LCD_CMD) # 101000 Data length, number of lines, font size
+    lcd_byte(0x01,LCD_CMD) # 000001 Clear display
+    time.sleep(E_DELAY)
 
 def lcd_byte(bits, mode):
   # Send byte to data pins
@@ -238,6 +270,7 @@ def print_wrong_args_error():
   -b0   : Turns backlight off
   -b1   : Turns backlight on
   -c    : Clears the screen
+  -ch   : Writes character at provided location x,y
   -i    : Sets GPIO outputs and initializes the display
   -l1   : Writes provided string in arg2 on line 1
   -l2   : Writes provided string in arg2 on line 2
@@ -247,6 +280,7 @@ def print_wrong_args_error():
   python3 lcd_16x2.py -i
   python3 lcd_16x2.py -c
   python3 lcd_16x2.py -l1 "This is line 1"
+  python3 lcd_16x2.py -ch A 6,0
   ''');
 
 if __name__ == '__main__':
