@@ -1,6 +1,13 @@
 # Raspberry Pi Zero W Scripts
 Scripts created for Raspberry Pi Zero W assistant using Google Assistant and Google Cloud SDK. Root folder `./` contains scrips written for features listed below, `./drivers` folder contains drivers written for external hardware connected through GPIO pins.
 
+### Prerequisite
+* Python3 with libraries: python3-gpiozero, redis, python-nmap, tcp-latency
+* Google Assistant SDK
+* Redis
+* OMX Player or mpg123
+* nmap
+
 ## Scripts
 ### Initial setup
 Set scripts folder (this) in path environment variable `/home/pi/.profile`:
@@ -41,7 +48,7 @@ bash speak.sh say SAY_HELLO
 This script pings `8.8.8.8` to check internet and sets GPIO(4) output 1 if internet connection is not available else will set it 0
 Usage: `sudo bash internet_indecator.sh <start|check>`
 ##### Setup crontab to schedule the script
-* Edit corntab config: `conrntab -e`
+* Edit corntab config: `crontab -e`
 * Configure start script on boot `@reboot sudo bash /home/pi/scripts/internet_indicator.sh start >/dev/null 2>&1`
 * Configure check script every minute `* * * * * sudo bash /home/pi/scripts/internet_indicator.sh check >/dev/null 2>&1`
 Due to limitations of `crontab` above line schedules check per minute, to check every 20 seconds you can do
@@ -72,8 +79,11 @@ python3 display_stats.py -d 7
 python3 display_stats.py -n
 ```
 ##### Setup crontab to schedule the information to be displayed
-* Edit corntab config: `conrntab -e`
+* Edit corntab config: `crontab -e`
 ```
+@reboot sudo /usr/bin/python3 /home/pi/scripts/drivers/lcd_16x2.py -i >/dev/null 2>&1
+@reboot sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -sn >/dev/null 2>&1
+@reboot sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -sw >/dev/null 2>&1
 * * * * * sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -n >/dev/null 2>&1
 * * * * * sleep 7.5; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -t >/dev/null 2>&1
 * * * * * sleep 15; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -p >/dev/null 2>&1
@@ -82,9 +92,9 @@ python3 display_stats.py -n
 * * * * * sleep 37.5; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -m >/dev/null 2>&1
 * * * * * sleep 45; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -l >/dev/null 2>&1
 * * * * * sleep 52.5; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -d 7 >/dev/null 2>&1
-* * * * * sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -sn >/dev/null 2>&1
-* * * * * sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -sw >/dev/null 2>&1
-* * * * * sudo /usr/bin/python3 /home/pi/scripts/drivers/lcd_16x2.py -i >/dev/null 2>&1
+*/5 * * * * sleep 11; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -sn >/dev/null 2>&1
+*/15 * * * * sleep 47; sudo /usr/bin/python3 /home/pi/scripts/display_stats.py -sw >/dev/null 2>&1
+37 */4 * * * sleep 19; sudo /usr/bin/python3 /home/pi/scripts/drivers/lcd_16x2.py -i >/dev/null 2>&1
 ```
 
 ## Drivers

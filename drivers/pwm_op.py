@@ -13,7 +13,7 @@ import RPi.GPIO as GPIO
 import time
 
 PWM_OP = 27         # GPIO output pin
-FREQUENCY = 120     # Hz
+FREQUENCY = 60     # Hz
 DUTY_CYCLE = 0.6    # 0 < duty_cycle < 1
 
 time_on = DUTY_CYCLE / FREQUENCY

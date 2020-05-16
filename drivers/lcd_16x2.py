@@ -112,7 +112,7 @@ def main():
 """ Writes single line specified, scrolls if more than LCD_WIDTH characters """
 def write_line(text, is_first, initial_delay = 1.5):
     lcd_line = LCD_LINE_1 if is_first else LCD_LINE_2
-    text = text.ljust(LCD_WIDTH, ' ')
+    text = text.ljust(LCD_WIDTH)
     text_length = len(text)
     text_pointer = 0
     
@@ -255,7 +255,7 @@ def lcd_toggle_enable():
 
 def lcd_string(message,line):
   # Send string to display
-  message = message.ljust(LCD_WIDTH,' ')
+  message = message.ljust(LCD_WIDTH)
 
   lcd_byte(line, LCD_CMD)
 
