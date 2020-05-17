@@ -28,9 +28,6 @@ if [ -d "$PI_HOME/scripts/drivers" ] ; then
 fi
 ```
 
-### hello_led_gpio.py
-Sample program to turn on/off LEDs mounted on GPIO. 
-
 ### speak
 Uses google cloud text to speech api to create mp3 speech files. Requires `omxplayer` (or `mpg123`) and `gcloud` cli (https://cloud.google.com/sdk/docs#deb)to be installed.
 Refer https://cloud.google.com/text-to-speech/docs/quickstart-protocol for tutorial
@@ -131,3 +128,13 @@ Configure systemd
 sudo systemctl daemon-reload 
 sudo systemctl enable pwm_op.service 
 ```
+
+### led_gpio.sh
+Driver to set color leds on/off
+##### Setup crontab to initialize LED GPIO at startup
+* Edit corntab config: `crontab -e`
+```
+@reboot sudo /bin/bash /home/pi/scripts/drivers/led_gpio.sh init >/dev/null 2>&1
+```
+Supported colors are `red`, `green`, `blue`, `white` and supported states are `0`, `1`
+Example: `led_gpio.sh set red 1`
