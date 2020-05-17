@@ -44,9 +44,9 @@
 # 1 : GND
 # 2 : 5V                     - Some displays run on 5V
 # 3 : Contrast (0-5V)*       - 0V (Ground) 
-# 4 : RS (Register Select)   - GPIO 7
+# 4 : RS (Register Select)   - GPIO 6
 # 5 : R/W (Read Write)       - Ground
-# 6 : Enable or Strobe       - GPIO 8
+# 6 : Enable or Strobe       - GPIO 5
 # 7 : Data Bit 0             - NOT USED
 # 8 : Data Bit 1             - NOT USED
 # 9 : Data Bit 2             - NOT USED
@@ -64,8 +64,8 @@ import time
 import sys
 
 # Define GPIO to LCD mapping
-LCD_RS = 7
-LCD_E  = 8
+LCD_RS = 6
+LCD_E  = 5
 LCD_D4 = 25
 LCD_D5 = 24
 LCD_D6 = 23
