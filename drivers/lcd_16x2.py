@@ -177,6 +177,10 @@ def clear():
 def set_backlight(status):
     GPIO.output(LCD_BK, status)
     
+""" Get backlight status """
+def get_backlight():
+    return GPIO.input(LCD_BK)
+    
 """ GPIO cleanup """
 def gpio_cleanup():
     GPIO.cleanup()

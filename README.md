@@ -138,3 +138,30 @@ Driver to set color leds on/off
 ```
 Supported colors are `red`, `green`, `blue`, `white` and supported states are `0`, `1`
 Example: `led_gpio.sh set red 1`
+
+### spi.sh
+Driver to read values from SPI input and handle value changes. CE0 port is connected to MCP3008 of which
+CH0 is mode select potentiometer and CH1 is TEMT6000 output.
+Create service to start execution on startup
+```sh
+sudo nano /lib/systemd/system/spi.service 
+```
+Add below contents
+```
+[Unit] 
+Description=Service to read SPI inputs on CE0
+After=multi-user.target 
+ 
+[Service] 
+Type=idle 
+ExecStart=/usr/bin/python3 /home/pi/scripts/drivers/spi.py 
+ 
+[Install] 
+WantedBy=multi-user.target 
+```
+Configure systemd
+```sh
+sudo systemctl daemon-reload 
+sudo systemctl enable spi.service 
+```
+
